@@ -14,6 +14,7 @@ where the betas are learnable weights within the layer.  After implementing the 
 
 #### Results
 ![Nonparametric Validation Loss][results]
+
 Neither our sigmoid nor Fourier basis expansions provide massive drops in validation loss.  As Prof. Liu notes, however, they also do not result in an overfitting and increase in validation loss.  This simply indicates that these nonparametric expansions are not structurally beneficial for the TORCS data.
 
 [results]: https://github.com/edz504/project2/results/np_together_50_init50.png "Nonparametric Validation Loss"
