@@ -8,6 +8,7 @@ Chenyi recently modified LSTM implementations in Caffe used in previous work (TO
 We implement Nonparametric Rectified Linear Unit layers within Caffe with two different basis expansions: sigmoid and Fourier.  Specifically, this means a forward pass would consist of the following:
 
 f1(x) = max(0, x) + beta * sigmoid(x)
+
 f2(x) = max(0, x) + beta1 * sin(x) + beta2 * cos(x)
 
 where the betas are learnable weights within the layer.  After implementing the forward and backward CPU and GPU versions of these layers, we proceed with the training.  This consists of a parametric initialization of the network for 50,000 iterations (until validation loss has converged), followed by another 50,000 iterations of the nonparametric version of the network, initialized with the weights from the first 50,000 parametric iterations.
