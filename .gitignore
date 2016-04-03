@@ -1,2 +1,5 @@
 # Markdown preview
 *.html
+
+# OSX shenanigans
+*.DS_Store
