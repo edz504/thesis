@@ -2,7 +2,7 @@
 ### Extending LSTM Nets with Nonparametric Bases for Affordance Learning in Vision-Based Autonomous Driving
 
 #### Motivation
-Chenyi recently modified LSTM implementations in Caffe used in previous work (TODO(Eddie): find authors) to make them suitable for our TORCS dataset.  As work from Prof. Liu has shown (paper pending), extending activation functions in deep networks with nonparametric bases greatly expands the model exploration space, and can enable much more predictively powerful models.  We look to apply these extensions to the LSTM pipeline created by Chenyi.
+Chenyi recently modified LSTM implementations in Caffe used in [previous work](http://jeffdonahue.com/lrcn/) by Donahue et al. to make them suitable for our TORCS dataset.  As work from Prof. Liu has shown (paper pending), extending activation functions in deep networks with nonparametric bases greatly expands the model exploration space, and can enable much more predictively powerful models.  We look to apply these extensions to the LSTM pipeline created by Chenyi.
 
 #### Implementation
 We implement Nonparametric Rectified Linear Unit layers within Caffe with two different basis expansions: sigmoid and Fourier.  Specifically, this means a forward pass would consist of the following:
