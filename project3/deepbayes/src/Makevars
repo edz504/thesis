@@ -1,0 +1,5 @@
+PKG_CPPFLAGS=-I$(HOME)/deepbayes/bayesopt_inst/include -I$(HOME)/deepbayes/bayesopt_inst/include/bayesopt -I$(HOME)/deepbayes/bayesopt_inst/utils -I$(HOME)/deepbayes/caffe_inst/include -I/usr/local/cuda-7.5/include
+
+PKG_LIBS=-L$(HOME)/deepbayes/bayesopt_inst/lib -lbayesopt -lnlopt -lboost_system -L$(HOME)/deepbayes/caffe_inst/lib -lcaffe -L/usr/local/cuda/lib64 -lcaffe -L/usr/lib64/atlas -lcaffe -Wl,-rpath=$(HOME)/deepbayes/caffe_inst/lib
+
+## CXX_STD = CXX11

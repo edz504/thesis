@@ -1,0 +1,14 @@
+net: "net.prototxt"
+test_iter: test_iter
+test_interval: max_iter
+base_lr: 0.01
+momentum: 0.9
+weight_decay: 0.0005
+lr_policy: "inv"
+gamma: 0.0001
+power: 0.75
+display: max_iter
+max_iter: max_iter
+snapshot: max_iter
+snapshot_prefix: "prefix"
+solver_mode: GPU

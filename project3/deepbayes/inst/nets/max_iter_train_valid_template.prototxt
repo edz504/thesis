@@ -1,0 +1,133 @@
+name: "max_iter"
+layer {
+  name: "data"
+  type: "HDF5Data"
+  top: "data"
+  top: "label"
+  hdf5_data_param {
+    source: <train_source>
+    batch_size: 100
+  }
+  include: {
+    phase: TRAIN
+  }
+}
+layer {
+  name: "data"
+  type: "HDF5Data"
+  top: "data"
+  top: "label"
+  hdf5_data_param {
+    source: <valid_source>
+    batch_size: 100
+  }
+  include: {
+    phase: TEST
+  }
+}
+layer {
+  name: "ip1"
+  type: "InnerProduct"
+  bottom: "data"
+  top: "ip1"
+  inner_product_param {
+    num_output: 3
+    weight_filler {
+      type: "uniform"
+      min: -1
+      max: 1
+    }
+    bias_term: false
+  }
+}
+layer {
+  name: "sigmoid1"
+  type: "Sigmoid"
+  bottom: "ip1"
+  top: "sigmoid1"
+}
+layer {
+  name: "ip2"
+  type: "InnerProduct"
+  bottom: "sigmoid1"
+  top: "ip2"
+  inner_product_param {
+    num_output: 5
+    weight_filler {
+      type: "uniform"
+      min: -1
+      max: 1
+    }
+    bias_term: false
+  }
+}
+layer {
+  name: "sigmoid2"
+  type: "Sigmoid"
+  bottom: "ip2"
+  top: "sigmoid2"
+}
+layer {
+  name: "ip3"
+  type: "InnerProduct"
+  bottom: "sigmoid2"
+  top: "ip3"
+  inner_product_param {
+    num_output: 10
+    weight_filler {
+      type: "uniform"
+      min: -1
+      max: 1
+    }
+    bias_term: false
+  }
+}
+layer {
+  name: "sigmoid3"
+  type: "Sigmoid"
+  bottom: "ip3"
+  top: "sigmoid3"
+}
+layer {
+  name: "ip4"
+  type: "InnerProduct"
+  bottom: "sigmoid3"
+  top: "ip4"
+  inner_product_param {
+    num_output: 5
+    weight_filler {
+      type: "uniform"
+      min: -1
+      max: 1
+    }
+    bias_term: false
+  }
+}
+layer {
+  name: "sigmoid4"
+  type: "Sigmoid"
+  bottom: "ip4"
+  top: "sigmoid4"
+}
+layer {
+  name: "ip5"
+  type: "InnerProduct"
+  bottom: "sigmoid4"
+  top: "ip5"
+  inner_product_param {
+    num_output: 2
+    weight_filler {
+      type: "uniform"
+      min: -1
+      max: 1
+    }
+    bias_term: false
+  }
+}
+layer {
+  name: "loss"
+  type: "EuclideanLoss"
+  bottom: "ip5"
+  bottom: "label"
+  top: "loss"
+}
