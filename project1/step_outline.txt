@@ -1,0 +1,76 @@
+Listed in (ideal) order of execution / implementation
+===
+
+code/export_caffe_data/export.py
+Chunks the leveldb into numpy arrays of 10000 x 3 x 210 x 280, stored as train_i_gzip.hkl in data/hkl_train (moved after script was run).
+
+code/export_caffe_data/export_y.py
+Exports the leveldb affordance indicator values into a numpy array, hickled at data/hkl_train/train_y_gzip.hkl.
+
+code/scale_y_.py
+Scales the stored affordance indicators to [0, 1], stored in data/ (originally stored in data/hkl_train, moved after script was run).  Note: train_conv.py loads the unscaled version and then scales it, but we decided to store the scaled version thereafter.
+
+code/train_conv.py
+Implements LeNet architecture.  Loads the X data chunk by chunk; for each one, the script casts it to float32, and fits the convnet to it (100 epochs per chunk) along with the corresponding y values.  The model is stored in data/models/model1.pkl with cPickle, not hickle (nolearn objects incompatible with HDF5).  This script takes ~ 3 days to run on SMILE GPU.
+
+code/write_training_loss.py
+Extracts the stored training and validation loss during the training phase for the convnet, and writes it to loss.csv (which is copied to local machine and visualized with R-ggplot2).
+
+code/extract_convnet_features.py
+Defines the Theano function to get the output of the last hidden layer before output (500 nodes).  Loads the data chunk by chunk, but even these chunks are too large -- we "mini-chunk" these as well, and store all features extracted in one 484815 x 500 numpy array (which is small enough to store in memory, and as one .hkl file).
+
+code/basic_lin_reg.py
+Fits a linear model for each affordance indicator to 484815 x 500 and scaled y, stores the results in data/models/linear_model_aff_ind_{0}.pkl.
+
+code/wrangle_x_t-1.py
+Creates a new numpy array where each row contains the 500 convnet features for that given time, as well as the 500 convnet feateures for the t - 1 step.  This results in a 484814 x 1000 numpy array (note that we discard the first data point).
+
+code/basic_lin_reg_t1.py
+Fits a linear model for each affordance indicator to 484814 x 1000 and scaled y, stores p-values only in data/models/linear_model_aff_ind_t1_pvals_{0}.pkl.
+
+code/wrangle_pvalues.py
+Extracts p-values from results of t regression and pickled results from t-1 regression, and stores in separate csv files (t_pvalues.csv, t-1_pvalues.csv).
+
+code/wrangle_x_general.py
+Defines a method that takes in an integer [1, 484814], and wrangles the X_cnn matrix corresponding to including that number of history steps.  For example, wrangle_x(num_prev=2) would make a 484813 x 1500 matrix.  Note that we drop the first num_prev data points, because they do not have the full previous time steps.
+
+code/wrangle_main.py
+Calls the above method repeatedly on t - 2 to t - 6.  Later modified to also wrangle t - 7 to t - 9.
+
+code/general_lin_reg.py
+Fits t - 1 to t - 6 models for each of 14 affordance indicators, and stores the AIC, BIC, F-statistic, and p-value of the F-statistic in aic_bic_f_t-1_through_t-6.csv.  Note: this takes over 36 hours to run.
+
+code/get_t0_results.py
+Extract the 4 values described above for the previously trained 14 t-only models, and save them in aic_bic_f_t_only.csv.
+
+^ Above is repeated for t - 10 to t - 12, but killed at t - 11 due to memory.  
+
+code/split_train_test.py
+Select indices for training and testing split.
+
+code/sklearn_reg_t0-12.py
+Uses sklearn to train t to t - 12 models and save them (just coefficients), hoping for speed-up over statsmodels.  These are multivariate, so the beta matrix is 14 x k, where k = 500, 1000, etc. for the t, t - 1, etc. models.
+^ segfaults at t - 8, trying that again.
+^ modified to scale X first and use non-scaled y.
+
+code/sklearn_reg_rmse.py
+Doing it twice to see if random sampling is important.  Dumping indices to train_inds2.txt and RMSEs to sklearn_RMSE2.csv
+
+code/sklearn_sgd_train_and_aicbic.py
+SGD training and stacked AIC/BIC computation on 100%
+
+code/sklearn_sgd_rmse.py
+SGD training on 80%, RMSE computation on 20%.
+
+code/expand_basis.py
+Load the t-7 cnn500 data and expand basis to order 3 polynomial (no interactions).  Creates 484808 x 10500 data matrix.
+
+code/sgd_basis_expansion.py
+SGD training on 80% of expanded basis t-7 data, RMSE computation on 20%.
+
+code/convert_t-7_to_csv.py
+Load hickle'd t-7 file and dump to csv for reading into R + MARS (earth).
+=> unnecessary, used py-earth
+
+code/MARS_fast_rmse.py
+Uses py-earth to train and evaluate a MARS model (fast).
