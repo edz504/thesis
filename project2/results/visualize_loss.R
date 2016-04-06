@@ -72,22 +72,22 @@ parametric_init_df <- rbind(parametric_init, parametric_init_2[1:200, ])
 parametric_init_df <- rbind(parametric_init,
                             parametric_init_2)
 np_sigmoid_50 <- read.csv('lstm_np_01_loss.csv')
-# plot_df <- data.frame(init_iteration=parametric_init_df$iteration,
-#                       init_test_loss=parametric_init_df$testing_loss,
-#                       np_iteration=np_sigmoid_50$iteration,
-#                       np_test_loss=np_sigmoid_50$testing_loss)
-# plot_df$init_iteration <- plot_df$init_iteration * 100
-# plot_df$np_iteration <- plot_df$np_iteration * 100
+plot_df <- data.frame(init_iteration=parametric_init_df$iteration,
+                      init_test_loss=parametric_init_df$testing_loss,
+                      np_iteration=np_sigmoid_50$iteration,
+                      np_test_loss=np_sigmoid_50$testing_loss)
+plot_df$init_iteration <- plot_df$init_iteration * 100
+plot_df$np_iteration <- plot_df$np_iteration * 100
 
-# ggplot(plot_df) +
-#     geom_line(aes(x=init_iteration, y=init_test_loss),
-#               colour=gg_color_hue(2)[1]) +
-#     geom_line(aes(x=np_iteration, y=np_test_loss),
-#               colour=gg_color_hue(2)[2]) +
-#     ggtitle('Nonparametric Testing Loss, Parametric Initialization') +
-#     xlab('Iteration') +
-#     ylab('Testing Loss')
-# ggsave(file='np_sigmoid_50_init50.png', width=10, height=6)
+ggplot(plot_df) +
+    geom_line(aes(x=init_iteration, y=init_test_loss),
+              colour=gg_color_hue(2)[1]) +
+    geom_line(aes(x=np_iteration, y=np_test_loss),
+              colour=gg_color_hue(2)[2]) +
+    ggtitle('Nonparametric (Sigmoid) Testing Loss, Parametric Initialization') +
+    xlab('Iteration') +
+    ylab('Testing Loss')
+ggsave(file='np_sigmoid_50_init50.png', width=10, height=6)
 
 
 # 50k parametric, 50k sin/cos nonparametric
@@ -136,28 +136,30 @@ ggsave(file='np_sincos_50_init50.png', width=10, height=6)
 # Plot sin/cos and sigmoid together
 plot_df <- data.frame(
   init_iteration=parametric_init_df$iteration,
-  init_test_loss=parametric_init_df$testing_loss,
-  np_sigmoid_iteration=np_sigmoid_50$iteration,
-  np_sigmoid_test_loss=np_sigmoid_50$testing_loss,
-  np_sincos_iteration=np_sincos_50$iteration,
-  np_sincos_test_loss=np_sincos_50$testing_loss)
+  init_test_loss=parametric_init_df$testing_loss)
 plot_df$init_iteration <- plot_df$init_iteration * 100
-plot_df$np_sigmoid_iteration <- plot_df$np_sigmoid_iteration * 100
-plot_df$np_sincos_iteration <- plot_df$np_sincos_iteration * 100
 
+# Melt 2x NP
+np_df <- data.frame(
+  np_iteration=np_sigmoid_50$iteration,
+  np_sigmoid_test_loss=np_sigmoid_50$testing_loss,
+  np_sincos_test_loss=np_sincos_50$testing_loss)
+plot_df2 <- melt(np_df, id='np_iteration')
+plot_df2$np_iteration <- plot_df2$np_iteration * 100
+
+final_plot_df <- cbind(plot_df, plot_df2)
 # Only keep every 500 iterations
-plot_df <- plot_df %>% filter(init_iteration %% 500 == 0)
+final_plot_df <- final_plot_df %>% filter(init_iteration %% 500 == 0)
 
-ggplot(plot_df) +
+# Change colors so that red
+
+ggplot(final_plot_df) +
     geom_line(aes(x=init_iteration,
                   y=init_test_loss),
-              colour=gg_color_hue(3)[1]) +
-    geom_line(aes(x=np_sigmoid_iteration,
-                  y=np_sigmoid_test_loss),
-              colour=gg_color_hue(3)[2]) +
-    geom_line(aes(x=np_sincos_iteration,
-                  y=np_sincos_test_loss),
-              colour=gg_color_hue(3)[3]) +
+              colour='#34495e') +
+    geom_line(aes(x=np_iteration,
+                  y=value,
+                  colour=variable)) +
     ggtitle('Nonparametric Testing Loss, Parametric Initialization') +
     xlab('Iteration') +
     ylab('Testing Loss')
